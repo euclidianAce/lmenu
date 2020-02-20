@@ -7,11 +7,12 @@ charprompt.__index = charprompt
 function charprompt.new(text)
 	return setmetatable({
 		text = text,
-		options = {}
+		default = 1,
+		options = {},
 	}, charprompt)
 end
 
-function charprompt:add(char, callback)
+function charprompt:add(char, callback, ...)
 	if type(char) == "string" then
 		char = string.byte(char)
 	end
@@ -19,7 +20,8 @@ function charprompt:add(char, callback)
 		char = char,
 		callback = callback or function()
 			return char
-		end
+		end,
+		callbackArgs = {...}
 	})
 	return self
 end
@@ -32,13 +34,22 @@ function charprompt:decorate(left, right)
 	return self
 end
 
-local function writeChar(options)
+function charprompt:setDefault(n)
+	self.default = n
+	return self
+end
+
+local function writeChar(options, upper)
 	local left, right = options.left, options.right
 	local char = options.char
 	if left then
 		io.write(left)
 	end
-	io.write(string.char(char))
+	if upper then
+		io.write(string.char(char):upper())
+	else
+		io.write(string.char(char))
+	end
 	if right then
 		io.write(right)
 	end
@@ -47,7 +58,7 @@ end
 function charprompt:draw()
 	io.write(self.text or "", " [")
 	for i, v in ipairs(self.options) do
-		writeChar(v)
+		writeChar(v, i == self.default)
 		io.write(i < #self.options and "/" or "")
 	end
 	io.write("]")
@@ -70,12 +81,16 @@ function charprompt:__call()
 				running = false
 			end
 		end
+		if c == 10 then -- enter for default
+			c = self.options[self.default]
+			running = false
+		end
 	end
 	self:resetCursor()
 	io.write(self.text or "", " ")
 	writeChar(c)
 	io.write("\n")
-	return c.callback()
+	return c.callback(table.unpack(c.callbackArgs))
 end
 
 return charprompt

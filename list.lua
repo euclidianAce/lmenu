@@ -22,12 +22,13 @@ function list:setSelector(selector)
 	return self
 end
 
-function list:add(content, callback)
+function list:add(content, callback, ...)
 	table.insert(self.options, {
 		content = content,
 		callback = callback or function()
 			return content
-		end
+		end,
+		callbackArgs = {...},
 	})
 	return self
 end
@@ -118,7 +119,7 @@ function list:__call()
 		io.write(self.title, " ")
 	end
 	io.write(opt.content, "\n")
-	return opt.callback(selected, opt.content), selected
+	return opt.callback(table.unpack(opt.callbackArgs))
 end
 
 
