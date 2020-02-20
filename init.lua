@@ -13,6 +13,7 @@ do
 		list = require("list"),
 		sequence = require("sequence"),
 		prompt = require("prompt"),
+		checklist = require("checklist"),
 	}
 	package.path = oldpath
 end
