@@ -12,6 +12,7 @@ do
 	lmenu = {
 		list = require("list"),
 		sequence = require("sequence"),
+		prompt = require("prompt"),
 	}
 	package.path = oldpath
 end

@@ -15,7 +15,9 @@ end
 function list:add(content, callback)
 	table.insert(self.options, {
 		content = content,
-		callback = callback
+		callback = callback or function()
+			return content
+		end
 	})
 	return self
 end
@@ -52,7 +54,10 @@ function list:__call()
 		end
 		self:resetCursor()
 	end
-	return self.options[self.selected].callback()
+	local selected = self.selected
+	local opt = self.options[selected]
+	return opt.callback(selected, opt.content)
 end
+
 
 return list

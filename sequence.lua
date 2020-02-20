@@ -12,16 +12,26 @@ function sequence:add(title, menu)
 	})
 	return self
 end
-function sequence:__call()
-	local i = 0
-	return function()
-		i = i + 1
-		if i > #self.menus then
-			return
-		end
-		print(self.menus[i].title)
-		return self.menus[i].menu()
+
+local function iterate(sequence)
+	for i, menu in ipairs(sequence.menus) do
+		io.write(menu.title)
+		io.write("\n")
+		coroutine.yield(menu.menu())
 	end
 end
+function sequence:__call()
+	for i, menu in ipairs(self.menus) do
+		if menu.title ~= "" then
+			io.write(menu.title)
+			io.write("\n")
+		end
+		menu.menu()
+	end
+end
+function sequence:iterate()
+	return coroutine.wrap(iterate), self
+end
+
 
 return sequence
