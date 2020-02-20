@@ -1,12 +1,19 @@
 
 local getchar = require("lgetchar").getchar
+local list = require("lmenu.list")
 
 local checklist = {}
-checklist.__index = checklist
+function checklist:__index(key) -- inherits from list
+	if not checklist[key] then
+		return list[key]
+	end
+	return checklist[key]
+end
 
-function checklist.new(selector, check, checkbox)
+function checklist.new(title, selector, check, checkbox)
 	return setmetatable({
 		options = {},
+		title = title,
 		selected = 1,
 		selector = selector or "> ",
 		check = check or "*",
@@ -14,59 +21,53 @@ function checklist.new(selector, check, checkbox)
 	}, checklist)
 end
 
-function checklist:add(option, checked, callback)
-	table.insert(self.options, {
-		content = option, 
-		checked = checked,
-		callback = callback
-	})
+function checklist:setCheck(check)
+	self.check = check
+	return self
+end
+
+function checklist:setCheckbox(checkbox)
+	self.checkbox = checkbox
 	return self
 end
 
 function checklist:draw()
+	if self.title then
+		io.write(self.title, "\n")
+	end
 	for i, v in ipairs(self.options) do
 		io.write(i == self.selected and self.selector or (" "):rep(#self.selector))
 		io.write(self.checkbox:format(
 			v.checked and self.check
 			or (" "):rep(#self.check)
 		))
-		io.write(" ")
-		io.write(v.content)
-		io.write("\n")
+		io.write(" ", v.content, "\n")
 	end
 end
 
-function checklist:resetCursor()
-	local esc = string.char(27) .. "["
-	for i = 1, #self.options do
-		io.write(esc .. "A")
-		io.write(esc .. "K")
-	end
-end
+checklist.keyhandles = {
+	[32] = function(self)
+		self.options[self.selected].checked = not self.options[self.selected].checked
+		return true
+	end,
+}
+setmetatable(checklist.keyhandles, {__index = list.keyhandles})
 
 function checklist:__call()
-	local running = true
-	while running do
-		self:draw()
-		local chars = {getchar()}
-		if #chars == 1 then
-			if chars[1] == 10 then -- enter
-				running = false
-			elseif chars[1] == 32 then -- space
-				self.options[self.selected].checked = not self.options[self.selected].checked
-			end
-		elseif chars[1] == 27 and chars[2] == 91 then
-			if chars[3] == 65 then --up
-				self.selected = math.max(self.selected - 1, 1)
-			elseif chars[3] == 66 then --down
-				self.selected = math.min(self.selected + 1, #self.options)
-			end
-		end
-		self:resetCursor()
-	end
+	self:run()
 	local rvals = {}
+	if self.title then
+		io.write(self.title, "\n")
+	end
 	for i, v in ipairs(self.options) do
 		if v.checked then
+			io.write(
+				(" "):rep(
+					#self.check +
+					#(self.checkbox:format(self.check))
+				)
+			)
+			io.write(v.content, "\n")
 			local vals = {}
 			if v.callback then
 				vals = {v.callback()}

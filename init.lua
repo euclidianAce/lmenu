@@ -1,22 +1,9 @@
 
-local getchar = require("lgetchar").getchar
-
-local _, path = ...
-path = path:sub(1, -9)
-
-
-local lmenu
-do
-	local oldpath = package.path
-	package.path = path .. "?.lua"
-	lmenu = {
-		list = require("list"),
-		sequence = require("sequence"),
-		prompt = require("prompt"),
-		checklist = require("checklist"),
-	}
-	package.path = oldpath
-end
-
+local lmenu = {
+	list = require("lmenu.list"),
+	sequence = require("lmenu.sequence"),
+	prompt = require("lmenu.prompt"),
+	checklist = require("lmenu.checklist"),
+}
 
 return lmenu
