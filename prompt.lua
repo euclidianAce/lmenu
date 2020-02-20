@@ -1,6 +1,4 @@
 
-local getchar = require("lgetchar").getchar
-
 local prompt = {}
 prompt.__index = prompt
 

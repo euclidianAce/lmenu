@@ -1,5 +1,4 @@
 
-local getchar = require("lgetchar").getchar
 local list = require("lmenu.list")
 
 local checklist = {}

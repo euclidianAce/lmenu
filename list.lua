@@ -1,5 +1,5 @@
 
-local getchar = require("lgetchar").getchar
+local getkey = require("lgetchar").getCharOrEscSeq
 
 local list = {}
 list.__index = list
@@ -7,7 +7,7 @@ list.__index = list
 function list.new(title, selector, selected)
 	return setmetatable({
 		title = title,
-		selector = selector or " > ",
+		selector = selector or " -> ",
 		selected = selected or 1,
 		options = {},
 	}, list)
@@ -52,11 +52,17 @@ function list:resetCursor()
 end
 
 function list:cursorUp()
-	self.selected = math.max(self.selected - 1, 1)
+	self.selected = self.selected - 1
+	if self.selected < 1 then
+		self.selected = #self.options
+	end
 end
 
 function list:cursorDown()
-	self.selected = math.min(self.selected + 1, #self.options)
+	self.selected = self.selected + 1
+	if self.selected > #self.options then
+		self.selected = 1
+	end
 end
 
 list.keyhandles = {
@@ -85,7 +91,7 @@ list.keyhandles = {
 
 function list:handlekeys()
 	local kh = self.keyhandles
-	for i, v in ipairs{getchar()} do
+	for i, v in ipairs{getkey()} do
 		kh = kh[v]
 		if not kh then
 			return true
