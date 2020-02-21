@@ -1,4 +1,7 @@
 
+local draw = require("lmenu.draw")
+local ANSI = require("lmenu.ANSI")
+
 local prompt = {}
 prompt.__index = prompt
 
@@ -14,20 +17,29 @@ function prompt.new(question, default, callback, ...)
 end
 
 function prompt:draw()
-	io.write(self.question)
+	draw.question(self.question)
+	draw.qmark("?")
+	draw.space()
 	if self.default ~= "" then
-		io.write(" (", self.default, ")")
+		draw.paren("(")
+		draw.default(self.default)
+		draw.paren(")")
+		draw.space()
 	end
-	io.write(": ")
 end
 
 function prompt:__call()
 	self:draw()
 	local input = io.read()
 	if input == "" then input = self.default end
-	io.write(string.char(27) .. "[A")
-	io.write(string.char(27) .. "[K")
-	io.write(self.question, ": ", input, "\n")
+	ANSI.cursor.up()
+	ANSI.clrln()
+
+	draw.question(self.question)
+	draw.space()
+	draw.option(input)
+	draw.nl()
+
 	self.callback(input, table.unpack(self.callbackArgs))
 	return input
 end

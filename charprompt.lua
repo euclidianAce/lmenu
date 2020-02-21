@@ -1,12 +1,14 @@
 
+local draw = require("lmenu.draw")
+local ANSI = require("lmenu.ANSI")
 local getchar = require("lgetchar").getchar
 
 local charprompt = {}
 charprompt.__index = charprompt
 
-function charprompt.new(text)
+function charprompt.new(question)
 	return setmetatable({
-		text = text,
+		question = question,
 		default = 1,
 		options = {},
 	}, charprompt)
@@ -26,47 +28,40 @@ function charprompt:add(char, callback, ...)
 	return self
 end
 
-function charprompt:decorate(left, right)
-	local c = self.options
-	local index = #self.options
-	c[index].left = left
-	c[index].right = right
-	return self
-end
-
 function charprompt:setDefault(n)
 	self.default = n
 	return self
 end
 
 local function writeChar(options, upper)
-	local left, right = options.left, options.right
 	local char = options.char
-	if left then
-		io.write(left)
-	end
 	if upper then
-		io.write(string.char(char):upper())
+		draw.char(string.char(char):upper())
 	else
-		io.write(string.char(char))
-	end
-	if right then
-		io.write(right)
+		draw.char(string.char(char))
 	end
 end
 
-function charprompt:draw()
-	io.write(self.text or "", " [")
-	for i, v in ipairs(self.options) do
-		writeChar(v, i == self.default)
-		io.write(i < #self.options and "/" or "")
+function charprompt:draw(n)
+	if self.question then
+		draw.question(self.question)
+		draw.space()
 	end
-	io.write("]")
+	if n then
+		draw.char(string.char(n))
+	else
+		draw.paren('[')
+		for i, v in ipairs(self.options) do
+			writeChar(v, i == self.default)
+			draw.sep(i < #self.options and "/" or "")
+		end
+		draw.paren(']')
+	end
 end
 
 function charprompt:resetCursor()
-	io.write(string.char(27) .. "[G")
-	io.write(string.char(27) .. "[K")
+	ANSI.cursor.column(1)
+	ANSI.clrln()
 end
 
 function charprompt:__call()
@@ -87,9 +82,8 @@ function charprompt:__call()
 		end
 	end
 	self:resetCursor()
-	io.write(self.text or "", " ")
-	writeChar(c)
-	io.write("\n")
+	self:draw(c.char)
+	draw.nl()
 	return c.callback(table.unpack(c.callbackArgs))
 end
 

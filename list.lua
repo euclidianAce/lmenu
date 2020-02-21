@@ -1,4 +1,6 @@
 
+local ANSI = require("lmenu.ANSI")
+local draw = require("lmenu.draw")
 local getkey = require("lgetchar").getCharOrEscSeq
 
 local list = {}
@@ -33,22 +35,29 @@ function list:add(content, callback, ...)
 	return self
 end
 
-function list:draw()
+function list:draw(sel)
 	if self.title then
-		io.write(self.title, "\n")
+		draw.title(self.title)
 	end
-	for i, v in ipairs(self.options) do
-		io.write(i == self.selected and self.selector or (" "):rep(#self.selector))
-		io.write(v.content, "\n")
+	if sel then
+		draw.space()
+		draw.option(self.options[self.selected].content)
+		draw.nl()
+	else
+		draw.nl()
+		for i, v in ipairs(self.options) do
+			draw.selector(i == self.selected and self.selector or (" "):rep(#self.selector))
+			draw.option(v.content)
+			draw.nl()
+		end
 	end
 end
 
 function list:resetCursor()
-	local esc = string.char(27) .. "["
 	local len = #self.options + (self.title and 1 or 0)
 	for i = 1, len do
-		io.write(esc .. "A")
-		io.write(esc .. "K")
+		ANSI.cursor.up()
+		ANSI.clrln()
 	end
 end
 
@@ -114,11 +123,7 @@ function list:__call()
 	self:run()
 	local selected = self.selected
 	local opt = self.options[selected]
-	
-	if self.title then
-		io.write(self.title, " ")
-	end
-	io.write(opt.content, "\n")
+	self:draw(true)
 	return opt.callback(table.unpack(opt.callbackArgs))
 end
 

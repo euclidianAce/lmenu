@@ -1,4 +1,5 @@
 
+local draw = require("lmenu.draw")
 local list = require("lmenu.list")
 
 local checklist = {}
@@ -30,17 +31,28 @@ function checklist:setCheckbox(checkbox)
 	return self
 end
 
-function checklist:draw()
+function checklist:draw(sel)
 	if self.title then
-		io.write(self.title, "\n")
+		draw.title(self.title)
+		draw.nl()
 	end
-	for i, v in ipairs(self.options) do
-		io.write(i == self.selected and self.selector or (" "):rep(#self.selector))
-		io.write(self.checkbox:format(
-			v.checked and self.check
-			or (" "):rep(#self.check)
-		))
-		io.write(" ", v.content, "\n")
+	if sel then
+		for i, v in ipairs(self.options) do
+			if v.checked then
+				draw.option(v.content)
+				draw.nl()
+			end
+		end
+	else
+		for i, v in ipairs(self.options) do
+			draw.selector(i == self.selected and self.selector or (" "):rep(#self.selector))
+			draw.checkbox(self.checkbox:format(
+				v.checked and self.check
+				or (" "):rep(#self.check)
+			))
+			draw.option(v.content)
+			draw.nl()
+		end
 	end
 end
 
@@ -55,18 +67,9 @@ setmetatable(checklist.keyhandles, {__index = list.keyhandles})
 function checklist:__call()
 	self:run()
 	local rvals = {}
-	if self.title then
-		io.write(self.title, "\n")
-	end
+	self:draw(true)
 	for i, v in ipairs(self.options) do
 		if v.checked then
-			io.write(
-				(" "):rep(
-					#self.check +
-					#(self.checkbox:format(self.check))
-				)
-			)
-			io.write(v.content, "\n")
 			local vals = {}
 			if v.callback then
 				vals = {v.callback()}
