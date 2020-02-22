@@ -1,25 +1,20 @@
 
-local draw = require("lmenu.draw")
+local Menu = require("lmenu.Menu")
 local ANSI = require("lmenu.ANSI")
-local getchar = require("lgetchar").getchar
+local draw = require("lmenu.draw")
+local prompt = require("lmenu.prompt")
+local getchar = require("lgetchar").getChar
 
-local charprompt = {}
-charprompt.__index = charprompt
-
-function charprompt.new(question)
-	return setmetatable({
-		question = question,
-		default = 1,
-		options = {},
-	}, charprompt)
-end
+local charprompt = Menu.new(prompt)
+charprompt.default = 1
+charprompt.options = {}
 
 function charprompt:add(char, callback, ...)
 	if type(char) == "string" then
 		char = string.byte(char)
 	end
 	table.insert(self.options, {
-		char = char,
+		content = char,
 		callback = callback or function()
 			return char
 		end,
@@ -34,7 +29,7 @@ function charprompt:setDefault(n)
 end
 
 local function writeChar(options, upper)
-	local char = options.char
+	local char = options.content
 	if upper then
 		draw.char(string.char(char):upper())
 	else
@@ -45,11 +40,13 @@ end
 function charprompt:draw(n)
 	if self.question then
 		draw.question(self.question)
-		draw.space()
 	end
 	if n then
-		draw.char(string.char(n))
+		draw.space()
+		draw.char(string.char(n.content))
 	else
+		draw.qmark("?")
+		draw.space()
 		draw.paren('[')
 		for i, v in ipairs(self.options) do
 			writeChar(v, i == self.default)
@@ -64,14 +61,14 @@ function charprompt:resetCursor()
 	ANSI.clrln()
 end
 
-function charprompt:__call()
+function charprompt.metamethods:__call()
 	self:draw()
 	local running = true
 	local c
 	while running do
 		c = getchar()
 		for i, v in ipairs(self.options) do
-			if v.char == c then
+			if v.content == c then
 				c = v
 				running = false
 			end
@@ -82,7 +79,7 @@ function charprompt:__call()
 		end
 	end
 	self:resetCursor()
-	self:draw(c.char)
+	self:draw(c)
 	draw.nl()
 	return c.callback(table.unpack(c.callbackArgs))
 end

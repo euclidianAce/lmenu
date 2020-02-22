@@ -2,15 +2,21 @@
 local colorscheme = require("lmenu.colorscheme")
 local ANSI = require("lmenu.ANSI")
 
-local function write(csField, text)
+local function write(csField, object)
 	local cs = colorscheme.current
-	io.write(cs[csField], text, ANSI.reset)
+	if type(object) == "table" then
+		io.write(object.color or cs[csField])
+		io.write(object.content or "")
+	else
+		io.write(cs[csField], object)
+	end
+	io.write(ANSI.reset)
 end
 
 local draw = setmetatable({}, {
 	__index = function(_, key) 
-		return function(text)
-			write(key, text)
+		return function(object)
+			write(key, object)
 		end
 	end
 })

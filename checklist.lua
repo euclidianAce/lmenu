@@ -1,25 +1,11 @@
 
+local Menu = require("lmenu.Menu")
 local draw = require("lmenu.draw")
 local list = require("lmenu.list")
 
-local checklist = {}
-function checklist:__index(key) -- inherits from list
-	if not checklist[key] then
-		return list[key]
-	end
-	return checklist[key]
-end
-
-function checklist.new(title, selector, check, checkbox)
-	return setmetatable({
-		options = {},
-		title = title,
-		selected = 1,
-		selector = selector or "> ",
-		check = check or "*",
-		checkbox = checkbox or "[%s]"
-	}, checklist)
-end
+local checklist = Menu.new(list)
+checklist.check = "*"
+checklist.checkbox = "[%s]"
 
 function checklist:setCheck(check)
 	self.check = check
@@ -39,7 +25,7 @@ function checklist:draw(sel)
 	if sel then
 		for i, v in ipairs(self.options) do
 			if v.checked then
-				draw.option(v.content)
+				draw.option(v)
 				draw.nl()
 			end
 		end
@@ -50,7 +36,7 @@ function checklist:draw(sel)
 				v.checked and self.check
 				or (" "):rep(#self.check)
 			))
-			draw.option(v.content)
+			draw.option(v)
 			draw.nl()
 		end
 	end
@@ -64,9 +50,14 @@ checklist.keyhandles = {
 }
 setmetatable(checklist.keyhandles, {__index = list.keyhandles})
 
-function checklist:__call()
-	self:run()
+function checklist.metamethods:__call()
+	self:draw()
+	while self:handlekeys() do
+		self:resetCursor()
+		self:draw()
+	end
 	local rvals = {}
+	self:resetCursor()
 	self:draw(true)
 	for i, v in ipairs(self.options) do
 		if v.checked then
@@ -80,6 +71,5 @@ function checklist:__call()
 	end
 	return rvals
 end
-
 
 return checklist

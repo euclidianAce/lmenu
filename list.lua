@@ -1,19 +1,22 @@
 
+local Menu = require("lmenu.Menu")
 local ANSI = require("lmenu.ANSI")
 local draw = require("lmenu.draw")
-local getkey = require("lgetchar").getCharOrEscSeq
-
-local list = {}
-list.__index = list
-
-function list.new(title, selector, selected)
-	return setmetatable({
-		title = title,
-		selector = selector or " -> ",
-		selected = selected or 1,
-		options = {},
-	}, list)
+local lgetchar = require("lgetchar")
+local function getkey()
+	local c = lgetchar.getChar()
+	local d, e
+	if c == 27 then
+		d = lgetchar.getChar()
+		e = lgetchar.getChar()
+	end
+	return c, d, e
 end
+
+local list = Menu.new()
+list.selector = " -> "
+list.selected = 1
+list.options = {}
 
 function list:setTitle(title)
 	self.title = title
@@ -23,8 +26,10 @@ function list:setSelector(selector)
 	self.selector = selector
 	return self
 end
-
 function list:add(content, callback, ...)
+	if not rawget(self, "options") then
+		self.options = {}
+	end
 	table.insert(self.options, {
 		content = content,
 		callback = callback or function()
@@ -33,24 +38,6 @@ function list:add(content, callback, ...)
 		callbackArgs = {...},
 	})
 	return self
-end
-
-function list:draw(sel)
-	if self.title then
-		draw.title(self.title)
-	end
-	if sel then
-		draw.space()
-		draw.option(self.options[self.selected].content)
-		draw.nl()
-	else
-		draw.nl()
-		for i, v in ipairs(self.options) do
-			draw.selector(i == self.selected and self.selector or (" "):rep(#self.selector))
-			draw.option(v.content)
-			draw.nl()
-		end
-	end
 end
 
 function list:resetCursor()
@@ -110,6 +97,25 @@ function list:handlekeys()
 	return kh(self)
 end
 
+function list:draw(sel)
+	if self.title then
+		draw.title(self.title)
+		draw.space()
+	end
+	if sel then
+		draw.option(self.options[self.selected])
+		draw.nl()
+	else
+		if self.title then
+			draw.nl()
+		end
+		for i, v in ipairs(self.options) do
+			draw.selector(i == self.selected and self.selector or (" "):rep(#self.selector))
+			draw.option(v)
+			draw.nl()
+		end
+	end
+end
 function list:run()
 	local running = true
 	while running do
@@ -117,15 +123,17 @@ function list:run()
 		running = self:handlekeys()
 		self:resetCursor()
 	end
-end
-
-function list:__call()
-	self:run()
 	local selected = self.selected
 	local opt = self.options[selected]
 	self:draw(true)
-	return opt.callback(table.unpack(opt.callbackArgs))
+	if opt.callback then
+		if opt.callbackArgs then
+			return opt.callback(table.unpack(opt.callbackArgs))
+		end
+		return opt.callback()
+	end
 end
 
+list.metamethods.__call = list.run
 
 return list

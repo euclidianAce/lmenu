@@ -1,23 +1,26 @@
 
+local Menu = require("lmenu.Menu")
 local draw = require("lmenu.draw")
 local ANSI = require("lmenu.ANSI")
 
-local prompt = {}
-prompt.__index = prompt
+local prompt = Menu.new()
+prompt.default = ""
+prompt.callback = function(input) return input end
+prompt.callbackArgs = {}
 
-function prompt.new(question, default, callback, ...)
-	return setmetatable({
-		question = question,
-		default = default or "",
-		callback = callback or function(input) 
-			return input
-		end,
-		callbackArgs = {},
-	}, prompt)
+function prompt:setQuestion(str)
+	self.question = str
+	return self
+end
+function prompt:setDefault(str)
+	self.default = str
+	return self
 end
 
 function prompt:draw()
-	draw.question(self.question)
+	if self.question then
+		draw.question(self.question)
+	end
 	draw.qmark("?")
 	draw.space()
 	if self.default ~= "" then
@@ -28,7 +31,7 @@ function prompt:draw()
 	end
 end
 
-function prompt:__call()
+function prompt.metamethods:__call()
 	self:draw()
 	local input = io.read()
 	if input == "" then input = self.default end
