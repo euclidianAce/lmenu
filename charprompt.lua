@@ -7,9 +7,12 @@ local getchar = require("lgetchar").getChar
 
 local charprompt = Menu.new(prompt)
 charprompt.default = 1
-charprompt.options = {}
+charprompt.options = {'y','n'}
 
 function charprompt:add(char, callback, ...)
+	if not rawget(self, "options") then -- prevent overwriting parent options
+		self.options = {}
+	end
 	if type(char) == "string" then
 		char = string.byte(char)
 	end
