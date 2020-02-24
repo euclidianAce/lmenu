@@ -25,18 +25,28 @@ function checklist:draw(sel)
 	if sel then
 		for i, v in ipairs(self.options) do
 			if v.checked then
-				draw.option(v)
+				draw.space()
+				draw.selected(v)
 				draw.nl()
 			end
 		end
 	else
 		for i, v in ipairs(self.options) do
-			draw.selector(i == self.selected and self.selector or (" "):rep(#self.selector))
+			if i == self.selected then
+				draw.selector(self.selector)
+			else
+				draw.space(#self.selector)
+			end
 			draw.checkbox(self.checkbox:format(
 				v.checked and self.check
 				or (" "):rep(#self.check)
 			))
-			draw.option(v)
+			draw.space()
+			if v.checked then
+				draw.selected(v)
+			else
+				draw.option(v)
+			end
 			draw.nl()
 		end
 	end
@@ -63,7 +73,7 @@ function checklist.metamethods:__call()
 		if v.checked then
 			local vals = {}
 			if v.callback then
-				vals = {v.callback()}
+				vals = {v.callback(table.unpack(v.callbackArgs))}
 			end
 			vals.num = i
 			table.insert(rvals, vals)

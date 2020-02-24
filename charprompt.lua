@@ -9,23 +9,6 @@ local charprompt = Menu.new(prompt)
 charprompt.default = 1
 charprompt.options = {'y','n'}
 
-function charprompt:add(char, callback, ...)
-	if not rawget(self, "options") then -- prevent overwriting parent options
-		self.options = {}
-	end
-	if type(char) == "string" then
-		char = string.byte(char)
-	end
-	table.insert(self.options, {
-		content = char,
-		callback = callback or function()
-			return char
-		end,
-		callbackArgs = {...}
-	})
-	return self
-end
-
 function charprompt:setDefault(n)
 	self.default = n
 	return self
@@ -34,9 +17,9 @@ end
 local function writeChar(options, upper)
 	local char = options.content
 	if upper then
-		draw.char(string.char(char):upper())
+		draw.char(char:upper())
 	else
-		draw.char(string.char(char))
+		draw.char(char)
 	end
 end
 
@@ -45,10 +28,11 @@ function charprompt:draw(n)
 		draw.question(self.question)
 	end
 	if n then
+		draw.extra(":")
 		draw.space()
-		draw.char(string.char(n.content))
+		draw.char(n.content)
 	else
-		draw.qmark("?")
+		draw.extra("?")
 		draw.space()
 		draw.paren('[')
 		for i, v in ipairs(self.options) do
@@ -71,7 +55,7 @@ function charprompt.metamethods:__call()
 	while running do
 		c = getchar()
 		for i, v in ipairs(self.options) do
-			if v.content == c then
+			if string.byte(v.content) == c then
 				c = v
 				running = false
 			end
@@ -84,7 +68,13 @@ function charprompt.metamethods:__call()
 	self:resetCursor()
 	self:draw(c)
 	draw.nl()
-	return c.callback(table.unpack(c.callbackArgs))
+	if c.callback then
+		if c.callbackArgs then
+			return c.callback(table.unpack(c.callbackArgs))
+		end
+		return c.callback()
+	end
+	return c.content
 end
 
 return charprompt

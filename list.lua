@@ -26,19 +26,6 @@ function list:setSelector(selector)
 	self.selector = selector
 	return self
 end
-function list:add(content, callback, ...)
-	if not rawget(self, "options") then
-		self.options = {}
-	end
-	table.insert(self.options, {
-		content = content,
-		callback = callback or function()
-			return content
-		end,
-		callbackArgs = {...},
-	})
-	return self
-end
 
 function list:resetCursor()
 	local len = #self.options + (self.title and 1 or 0)
@@ -100,18 +87,27 @@ end
 function list:draw(sel)
 	if self.title then
 		draw.title(self.title)
-		draw.space()
 	end
 	if sel then
-		draw.option(self.options[self.selected])
+		if self.title then
+			draw.extra(":")
+			draw.space()
+		end
+		draw.selected(self.options[self.selected])
 		draw.nl()
 	else
 		if self.title then
+			draw.extra("?")
 			draw.nl()
 		end
 		for i, v in ipairs(self.options) do
-			draw.selector(i == self.selected and self.selector or (" "):rep(#self.selector))
-			draw.option(v)
+			if i == self.selected then
+				draw.selector(self.selector)
+				draw.selected(v)
+			else
+				draw.space(#self.selector)
+				draw.option(v)
+			end
 			draw.nl()
 		end
 	end
@@ -132,6 +128,7 @@ function list:run()
 		end
 		return opt.callback()
 	end
+	return self.options[self.selected].content
 end
 
 list.metamethods.__call = list.run

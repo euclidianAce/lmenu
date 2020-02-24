@@ -23,8 +23,9 @@ local draw = setmetatable({}, {
 function draw.nl()
 	io.write('\n')
 end
-function draw.space()
-	io.write(' ')
+function draw.space(n)
+	n = n or 1
+	io.write((' '):rep(n))
 end
 
 return draw
