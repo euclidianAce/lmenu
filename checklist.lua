@@ -6,6 +6,11 @@ local list = require("lmenu.list")
 local checklist = Menu.new(list)
 checklist.check = "*"
 checklist.checkbox = "[%s]"
+checklist.checks = setmetatable({}, {__index = function() return false end})
+
+local function getContent(option)
+	return option.content or option[1] or option
+end
 
 function checklist:setCheck(check)
 	self.check = check
@@ -25,9 +30,10 @@ function checklist:draw(sel)
 		draw.extra(":")
 		draw.nl()
 		for i, v in ipairs(self.options) do
-			if v.checked then
+			local content = getContent(v)
+			if self.checks[i] then
 				draw.space()
-				draw.selected(v)
+				draw.selected(content)
 				draw.nl()
 			end
 		end
@@ -35,20 +41,21 @@ function checklist:draw(sel)
 		draw.extra("?")
 		draw.nl()
 		for i, v in ipairs(self.options) do
+			local content = getContent(v)
 			if i == self.selected then
 				draw.selector(self.selector)
 			else
 				draw.space(#self.selector)
 			end
 			draw.checkbox(self.checkbox:format(
-				v.checked and self.check
+				self.checks[i] and self.check
 				or (" "):rep(#self.check)
 			))
 			draw.space()
-			if v.checked then
-				draw.selected(v)
+			if self.checks[i] then
+				draw.selected(content)
 			else
-				draw.option(v)
+				draw.option(content)
 			end
 			draw.nl()
 		end
@@ -57,7 +64,8 @@ end
 
 checklist.keyhandles = {
 	[32] = function(self)
-		self.options[self.selected].checked = not self.options[self.selected].checked
+		--self.options[self.selected].checked = not self.options[self.selected].checked
+		self.checks[self.selected] = not self.checks[self.selected]
 		return true
 	end,
 }
@@ -73,10 +81,14 @@ function checklist.metamethods:__call()
 	self:resetCursor()
 	self:draw(true)
 	for i, v in ipairs(self.options) do
-		if v.checked then
+		if self.checks[i] then
 			local vals = {}
 			if v.callback then
-				vals = {v.callback(table.unpack(v.callbackArgs))}
+				if v.callbackArgs then
+					vals = {v.callback(table.unpack(v.callbackArgs))}
+				else
+					vals = {v.callback()}
+				end
 			end
 			vals.num = i
 			table.insert(rvals, vals)
