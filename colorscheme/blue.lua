@@ -3,7 +3,6 @@ local rgb = require("lmenu.ANSI").fg
 
 local b = rgb(150,150,255)
 return setmetatable({
-	question = rgb(100,150,255),
 	title = rgb(100,150,255),
 	option = rgb(100,100,255),
 	sep = rgb(100,100,200),

@@ -5,7 +5,6 @@ local b = ANSI.color.bright
 
 local cs = setmetatable({
 	title = b.cyan,
-	question = b.cyan,
 
 	option = c.white,
 	selected = ANSI.bold .. b.white,

@@ -20,9 +20,10 @@ end
 function checklist:draw(sel)
 	if self.title then
 		draw.title(self.title)
-		draw.nl()
 	end
 	if sel then
+		draw.extra(":")
+		draw.nl()
 		for i, v in ipairs(self.options) do
 			if v.checked then
 				draw.space()
@@ -31,6 +32,8 @@ function checklist:draw(sel)
 			end
 		end
 	else
+		draw.extra("?")
+		draw.nl()
 		for i, v in ipairs(self.options) do
 			if i == self.selected then
 				draw.selector(self.selector)

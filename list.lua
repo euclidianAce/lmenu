@@ -18,6 +18,10 @@ list.selector = " -> "
 list.selected = 1
 list.options = {}
 
+local function getContent(option)
+	return option.content or option[1] or option
+end
+
 function list:setTitle(title)
 	self.title = title
 	return self
@@ -91,7 +95,8 @@ function list:draw(sel)
 			draw.extra(":")
 			draw.space()
 		end
-		draw.selected(self.options[self.selected])
+		local option = getContent(self.options[self.selected])
+		draw.selected(option)
 		draw.nl()
 		return
 	end
@@ -101,13 +106,14 @@ function list:draw(sel)
 		draw.extra("?")
 		draw.nl()
 	end
-	for i, v in ipairs(self.options) do
+	for i, option in ipairs(self.options) do
+		option = getContent(option)
 		if i == self.selected then
 			draw.selector(self.selector)
-			draw.selected(v)
+			draw.selected(option)
 		else
 			draw.space(#self.selector)
-			draw.option(v)
+			draw.option(option)
 		end
 		draw.nl()
 	end
@@ -129,7 +135,7 @@ function list:run()
 		end
 		return opt.callback()
 	end
-	return self.options[self.selected].content
+	return getContent(opt)
 end
 
 list.metamethods.__call = list.run

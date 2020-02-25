@@ -8,8 +8,8 @@ prompt.default = ""
 prompt.callback = function(input) return input end
 prompt.callbackArgs = {}
 
-function prompt:setQuestion(str)
-	self.question = str
+function prompt:setTitle(str)
+	self.title = str
 	return self
 end
 function prompt:setDefault(str)
@@ -18,11 +18,11 @@ function prompt:setDefault(str)
 end
 
 function prompt:draw()
-	if self.question then
-		draw.question(self.question)
+	if self.title then
+		draw.title(self.title)
+		draw.extra("?")
+		draw.space()
 	end
-	draw.qmark("?")
-	draw.space()
 	if self.default ~= "" then
 		draw.paren("(")
 		draw.default(self.default)
@@ -38,7 +38,8 @@ function prompt.metamethods:__call()
 	ANSI.cursor.up()
 	ANSI.clrln()
 
-	draw.question(self.question)
+	draw.title(self.title)
+	draw.extra(":")
 	draw.space()
 	draw.option(input)
 	draw.nl()

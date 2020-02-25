@@ -8,8 +8,10 @@ local getchar = require("lgetchar").getChar
 local charprompt = Menu.new(prompt)
 charprompt.default = 1
 charprompt.options = {
-	{content = 'y', altContent = "Yes"},
-	{content = 'n', altContent = "No"},
+	{content = 'y', altContent = "Yes",
+	callback = function() return true end},
+	{content = 'n', altContent = "No",
+	callback = function() return false end},
 }
 
 
@@ -32,8 +34,8 @@ local function writeChar(option, upper)
 end
 
 function charprompt:draw(c)
-	if self.question then
-		draw.question(self.question)
+	if self.title then
+		draw.title(self.title)
 	end
 	if c then
 		draw.extra(":")
