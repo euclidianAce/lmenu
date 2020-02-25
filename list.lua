@@ -85,33 +85,34 @@ function list:handlekeys()
 end
 
 function list:draw(sel)
-	if self.title then
-		draw.title(self.title)
-	end
 	if sel then
 		if self.title then
+			draw.title(self.title)
 			draw.extra(":")
 			draw.space()
 		end
 		draw.selected(self.options[self.selected])
 		draw.nl()
-	else
-		if self.title then
-			draw.extra("?")
-			draw.nl()
+		return
+	end
+
+	if self.title then
+		draw.title(self.title)
+		draw.extra("?")
+		draw.nl()
+	end
+	for i, v in ipairs(self.options) do
+		if i == self.selected then
+			draw.selector(self.selector)
+			draw.selected(v)
+		else
+			draw.space(#self.selector)
+			draw.option(v)
 		end
-		for i, v in ipairs(self.options) do
-			if i == self.selected then
-				draw.selector(self.selector)
-				draw.selected(v)
-			else
-				draw.space(#self.selector)
-				draw.option(v)
-			end
-			draw.nl()
-		end
+		draw.nl()
 	end
 end
+
 function list:run()
 	local running = true
 	while running do

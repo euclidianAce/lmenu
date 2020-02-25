@@ -7,30 +7,38 @@ local getchar = require("lgetchar").getChar
 
 local charprompt = Menu.new(prompt)
 charprompt.default = 1
-charprompt.options = {'y','n'}
+charprompt.options = {
+	{content = 'y', altContent = "Yes"},
+	{content = 'n', altContent = "No"},
+}
+
+
+local function getContent(option)
+	return option.content or option[1] or option
+end
+
+local function getAltContent(option)
+	return option.altContent or option[2]
+end
 
 function charprompt:setDefault(n)
 	self.default = n
 	return self
 end
 
-local function writeChar(options, upper)
-	local char = options.content
-	if upper then
-		draw.char(char:upper())
-	else
-		draw.char(char)
-	end
+local function writeChar(option, upper)
+	local char = getContent(option)
+	draw.char(upper and char:upper() or char)
 end
 
-function charprompt:draw(n)
+function charprompt:draw(c)
 	if self.question then
 		draw.question(self.question)
 	end
-	if n then
+	if c then
 		draw.extra(":")
 		draw.space()
-		draw.char(n.content)
+		draw.char(getAltContent(c) or getContent(c))
 	else
 		draw.extra("?")
 		draw.space()
@@ -55,7 +63,7 @@ function charprompt.metamethods:__call()
 	while running do
 		c = getchar()
 		for i, v in ipairs(self.options) do
-			if string.byte(v.content) == c then
+			if string.byte(getContent(v)) == c then
 				c = v
 				running = false
 			end
@@ -74,7 +82,7 @@ function charprompt.metamethods:__call()
 		end
 		return c.callback()
 	end
-	return c.content
+	return getContent(c)
 end
 
 return charprompt
