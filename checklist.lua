@@ -6,7 +6,6 @@ local list = require("lmenu.list")
 local checklist = Menu.new(list)
 checklist.check = "*"
 checklist.checkbox = "[%s]"
-checklist.checks = setmetatable({}, {__index = function() return false end})
 
 local function getContent(option)
 	return option.content or option[1] or option
@@ -20,7 +19,8 @@ function checklist:draw(sel)
 		draw.nl()
 		for i, v in ipairs(self.options) do
 			local content = getContent(v)
-			if self.checks[i] then
+         local checked = v.checked
+			if checked then
 				draw.space()
 				draw.selected(content)
 				draw.nl()
@@ -36,11 +36,11 @@ function checklist:draw(sel)
 				draw.space(#self.selector)
 			end
 			draw.checkbox(self.checkbox:format(
-				self.checks[i] and self.check
+				v.checked and self.check
 				or (" "):rep(#self.check)
 			))
 			draw.space()
-			if self.checks[i] then
+			if v.checked then
 				draw.selected(content)
 			else
 				draw.option(content)
@@ -52,11 +52,10 @@ end
 
 checklist.keyhandles = {
 	[32] = function(self)
-		--self.options[self.selected].checked = not self.options[self.selected].checked
-      if not rawget(self, "checks") then
-         self.checks = {}
+      if type(self.options[self.selected]) ~= "table" then
+         self.options[self.selected] = {self.options[self.selected]}
       end
-		self.checks[self.selected] = not self.checks[self.selected]
+		self.options[self.selected].checked = not self.options[self.selected].checked
 		return true
 	end,
 }
@@ -72,7 +71,7 @@ function checklist.metamethods:__call()
 	self:resetCursor()
 	self:draw(true)
 	for i, v in ipairs(self.options) do
-		if self.checks[i] then
+		if v.checked then
 			local vals = {}
 			if v.callback then
 				if v.callbackArgs then
