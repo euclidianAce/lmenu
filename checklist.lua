@@ -12,16 +12,6 @@ local function getContent(option)
 	return option.content or option[1] or option
 end
 
-function checklist:setCheck(check)
-	self.check = check
-	return self
-end
-
-function checklist:setCheckbox(checkbox)
-	self.checkbox = checkbox
-	return self
-end
-
 function checklist:draw(sel)
 	if self.title then
 		draw.title(self.title)

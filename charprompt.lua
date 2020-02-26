@@ -14,18 +14,12 @@ charprompt.options = {
 	callback = function() return false end},
 }
 
-
 local function getContent(option)
 	return option.content or option[1] or option
 end
 
 local function getAltContent(option)
 	return option.altContent or option[2]
-end
-
-function charprompt:setDefault(n)
-	self.default = n
-	return self
 end
 
 local function writeChar(option, upper)

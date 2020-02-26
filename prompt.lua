@@ -8,15 +8,6 @@ prompt.default = ""
 prompt.callback = function(input) return input end
 prompt.callbackArgs = {}
 
-function prompt:setTitle(str)
-	self.title = str
-	return self
-end
-function prompt:setDefault(str)
-	self.default = str
-	return self
-end
-
 function prompt:draw()
 	if self.title then
 		draw.title(self.title)

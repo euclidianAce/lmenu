@@ -1,8 +1,6 @@
 
 local Menu = {}
 
-local Option = {}
-
 function Menu.new(parent)
 	local class
 	class = {
@@ -26,6 +24,15 @@ function Menu.new(parent)
 		end,
 		metamethods = {
 			__index = function(t, key)
+            -- auto generate setter functions
+            if type(key) == "string" and #key > 3 and key:sub(1,3) == "set" then
+               local varName = key:sub(4,4):lower() .. key:sub(5,-1)
+               return function(t, val)
+                  t[varName] = val
+                  return t
+               end
+            end
+            -- inheritence
 				if not class[key] and parent then
 					return parent[key]
 				end

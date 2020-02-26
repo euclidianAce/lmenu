@@ -22,15 +22,6 @@ local function getContent(option)
 	return option.content or option[1] or option
 end
 
-function list:setTitle(title)
-	self.title = title
-	return self
-end
-function list:setSelector(selector)
-	self.selector = selector
-	return self
-end
-
 function list:resetCursor()
 	local len = #self.options + (self.title and 1 or 0)
 	for i = 1, len do
@@ -92,7 +83,6 @@ function list:draw(sel)
 	if sel then
 		if self.title then
 			draw.title(self.title)
-			draw.extra(":")
 			draw.space()
 		end
 		local option = getContent(self.options[self.selected])
@@ -103,7 +93,6 @@ function list:draw(sel)
 
 	if self.title then
 		draw.title(self.title)
-		draw.extra("?")
 		draw.nl()
 	end
 	for i, option in ipairs(self.options) do
