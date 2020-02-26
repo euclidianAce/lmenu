@@ -27,7 +27,6 @@ function checklist:draw(sel)
 		draw.title(self.title)
 	end
 	if sel then
-		draw.extra(":")
 		draw.nl()
 		for i, v in ipairs(self.options) do
 			local content = getContent(v)
@@ -38,7 +37,6 @@ function checklist:draw(sel)
 			end
 		end
 	else
-		draw.extra("?")
 		draw.nl()
 		for i, v in ipairs(self.options) do
 			local content = getContent(v)
@@ -65,6 +63,9 @@ end
 checklist.keyhandles = {
 	[32] = function(self)
 		--self.options[self.selected].checked = not self.options[self.selected].checked
+      if not rawget(self, "checks") then
+         self.checks = {}
+      end
 		self.checks[self.selected] = not self.checks[self.selected]
 		return true
 	end,
