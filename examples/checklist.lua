@@ -17,7 +17,7 @@ checklist{
 	options = {
 		"Option 1",
 		{"Option 2", callback = print},
-		{"Option 3", callback = function(a,b)
+		{"Option 3", checked = true, callback = function(a,b)
 			return a .. b
 		end,
 		callbackArgs = {"a", "b"}}

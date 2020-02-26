@@ -11,7 +11,6 @@ prompt.callbackArgs = {}
 function prompt:draw()
 	if self.title then
 		draw.title(self.title)
-		draw.extra("?")
 		draw.space()
 	end
 	if self.default ~= "" then
@@ -30,7 +29,6 @@ function prompt.metamethods:__call()
 	ANSI.clrln()
 
 	draw.title(self.title)
-	draw.extra(":")
 	draw.space()
 	draw.option(input)
 	draw.nl()

@@ -32,11 +32,9 @@ function charprompt:draw(c)
 		draw.title(self.title)
 	end
 	if c then
-		draw.extra(":")
 		draw.space()
 		draw.char(getAltContent(c) or getContent(c))
 	else
-		draw.extra("?")
 		draw.space()
 		draw.paren('[')
 		for i, v in ipairs(self.options) do
