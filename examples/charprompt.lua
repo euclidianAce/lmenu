@@ -9,6 +9,7 @@ charprompt():setTitle("This is a charprompt (2)")
 	:add{"n", "No"}
 	()
 
+-- default options will be capitalized
 charprompt{
 	title = "This is a charprompt (3)",
 	options = {'a','b','c'}

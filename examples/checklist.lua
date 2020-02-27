@@ -10,7 +10,15 @@ checklist():setTitle("This is a checklist")
 	:add("Option 1")
 	:add("Option 2")
 	:add("Option 3")
+	:add{"Option 4", checked = true}
 	()
+
+checklist():setTitle("This is another checklist")
+   :setOptions{
+      "Option 1", "Option 2", {"Option 3", checked = true}
+   }
+   :setSelected(3)
+   ()
 
 checklist{
 	title = "This is a checklist too",

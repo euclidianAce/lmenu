@@ -12,32 +12,21 @@ Create a menu object, add options to it with callbacks, then call the menu
 
 ```lua
 local lmenu = require "lmenu"
-local m = lmenu.list.new("->")
-m:add("This is an option", function()
-	print("Things")
-end)
-m:add("Option 2", function()
-	print("2")
-end)
-m:add(":)", function()
-	print(":(")
-end)
+local m = lmenu.list.new()
+m:setSelector("->")
+m:add("This is an option")
+m:add("Option 2")
+m:add(":)")
 m()
 ```
-Or for convenience, the `add` function will return the menu object so you can chain them together like so:
+Or for convenience, each function will return the menu object so you can chain them together like so:
 ```lua
-local m = lmenu.list.new("->")
-	:add("This is an option", function()
-		print("Things")
-	end)
-	:add("Option 2", function()
-		print("2")
-	end)
-	:add(":)", function()
-		print(":(")
-	end)
-m()
-
+local m = lmenu.list.new()
+	:setSelector("->")
+	:add("This is an option")
+	:add("Option 2")
+	:add(":)")
+	()
 ```
 
 Which should produce the following menu, controlled by the arrow keys (or j and k for vim users) and enter

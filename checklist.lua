@@ -52,9 +52,9 @@ end
 
 checklist.keyhandles = {
 	[32] = function(self)
-      if type(self.options[self.selected]) ~= "table" then
-         self.options[self.selected] = {self.options[self.selected]}
-      end
+		if type(self.options[self.selected]) ~= "table" then
+			self.options[self.selected] = {self.options[self.selected]}
+		end
 		self.options[self.selected].checked = not self.options[self.selected].checked
 		return true
 	end,
