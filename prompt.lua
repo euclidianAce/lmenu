@@ -21,7 +21,7 @@ function prompt:draw()
 	end
 end
 
-function prompt.metamethods:__call()
+function prompt:run()
 	self:draw()
 	local input = io.read()
 	if input == "" then input = self.default end

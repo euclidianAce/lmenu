@@ -3,6 +3,7 @@ local Menu = require("lmenu.Menu")
 local ANSI = require("lmenu.ANSI")
 local draw = require("lmenu.draw")
 local prompt = require("lmenu.prompt")
+local utils = require("lmenu.utils")
 local getchar = require("lgetchar").getChar
 
 local charprompt = Menu.new(prompt)
@@ -14,16 +15,8 @@ charprompt.options = {
 	callback = function() return false end},
 }
 
-local function getContent(option)
-	return option.content or option[1] or option
-end
-
-local function getAltContent(option)
-	return option.altContent or option[2]
-end
-
 local function writeChar(option, upper)
-	local char = getContent(option)
+	local char = utils.getContent(option)
 	draw.char(upper and char:upper() or char)
 end
 
@@ -33,7 +26,7 @@ function charprompt:draw(c)
 	end
 	if c then
 		draw.space()
-		draw.char(getAltContent(c) or getContent(c))
+		draw.char(utils.getAltContent(c) or utils.getContent(c))
 	else
 		draw.space()
 		draw.paren('[')
@@ -50,14 +43,14 @@ function charprompt:resetCursor()
 	ANSI.clrln()
 end
 
-function charprompt.metamethods:__call()
+function charprompt:run()
 	self:draw()
 	local running = true
 	local c
 	while running do
 		c = getchar()
 		for i, v in ipairs(self.options) do
-			if string.byte(getContent(v)) == c then
+			if string.byte(utils.getContent(v)) == c then
 				c = v
 				running = false
 			end
@@ -70,13 +63,9 @@ function charprompt.metamethods:__call()
 	self:resetCursor()
 	self:draw(c)
 	draw.nl()
-	if c.callback then
-		if c.callbackArgs then
-			return c.callback(table.unpack(c.callbackArgs))
-		end
-		return c.callback()
-	end
-	return getContent(c)
+
+	utils.doCallback(c)
+	return utils.getContent(c)
 end
 
 return charprompt

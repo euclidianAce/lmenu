@@ -36,4 +36,4 @@ Which should produce the following menu, controlled by the arrow keys (or j and 
   :)
 ```
 
-More examples can be found in the examples directory of this repository.
+More examples can be found in the examples directory of this repository and in the project and update scripts in my [utils repository](https://github.com/3uclidian/utils)

@@ -61,7 +61,7 @@ checklist.keyhandles = {
 }
 setmetatable(checklist.keyhandles, {__index = list.keyhandles})
 
-function checklist.metamethods:__call()
+function checklist:run()
 	self:draw()
 	while self:handlekeys() do
 		self:resetCursor()

@@ -2,6 +2,8 @@
 local Menu = require("lmenu.Menu")
 local ANSI = require("lmenu.ANSI")
 local draw = require("lmenu.draw")
+local utils = require("lmenu.utils")
+
 local lgetchar = require("lgetchar")
 local function getkey()
 	local c = lgetchar.getChar()
@@ -18,9 +20,6 @@ list.selector = " -> "
 list.selected = 1
 list.options = {}
 
-local function getContent(option)
-	return option.content or option[1] or option
-end
 
 function list:resetCursor()
 	local len = #self.options + (self.title and 1 or 0)
@@ -85,7 +84,7 @@ function list:draw(sel)
 			draw.title(self.title)
 			draw.space()
 		end
-		local option = getContent(self.options[self.selected])
+		local option = utils.getContent(self.options[self.selected])
 		draw.selected(option)
 		draw.nl()
 		return
@@ -96,7 +95,7 @@ function list:draw(sel)
 		draw.nl()
 	end
 	for i, option in ipairs(self.options) do
-		option = getContent(option)
+		option = utils.getContent(option)
 		if i == self.selected then
 			draw.selector(self.selector)
 			draw.selected(option)
@@ -115,18 +114,8 @@ function list:run()
 		running = self:handlekeys()
 		self:resetCursor()
 	end
-	local selected = self.selected
-	local opt = self.options[selected]
 	self:draw(true)
-	if opt.callback then
-		if opt.callbackArgs then
-			return opt.callback(table.unpack(opt.callbackArgs))
-		end
-		return opt.callback()
-	end
-	return getContent(opt)
+	return utils.doCallback(self.options[self.selected])
 end
-
-list.metamethods.__call = list.run
 
 return list
