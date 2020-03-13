@@ -3,14 +3,24 @@ local Menu = require("lmenu.Menu")
 local draw = require("lmenu.draw")
 local list = require("lmenu.list")
 
+---@class checklist : list
+---@field check string
+---@field checkbox string
 local checklist = Menu.new(list)
 checklist.check = "*"
 checklist.checkbox = "[%s]"
 
+---Gets the content of an option regardless of the type
+---@param option table|string
+---@return string
 local function getContent(option)
 	return option.content or option[1] or option
 end
 
+---Draws the list, if sel is true then draw the list in its finished state
+---@overload
+---@param sel boolean
+---@return nil
 function checklist:draw(sel)
 	if self.title then
 		draw.title(self.title)
@@ -19,7 +29,7 @@ function checklist:draw(sel)
 		draw.nl()
 		for i, v in ipairs(self.options) do
 			local content = getContent(v)
-         local checked = v.checked
+        local checked = v.checked
 			if checked then
 				draw.space()
 				draw.selected(content)

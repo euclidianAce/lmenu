@@ -15,12 +15,18 @@ local function getkey()
 	return c, d, e
 end
 
+---@class list : Menu
+---@field selector string
+---@field selected integer
+---@field options table
+---@field keyhandles table
 local list = Menu.new()
 list.selector = " -> "
 list.selected = 1
 list.options = {}
 
 
+---Puts the cursor back after drawing the menu
 function list:resetCursor()
 	local len = #self.options + (self.title and 1 or 0)
 	for i = 1, len do
@@ -43,6 +49,7 @@ function list:cursorDown()
 	end
 end
 
+---Callbacks for keypresses
 list.keyhandles = {
 	[10] = function() return false end, -- enter
 	[106] = function(self) -- j

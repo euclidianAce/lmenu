@@ -30,7 +30,7 @@ function prompt:run()
 
 	draw.title(self.title)
 	draw.space()
-	draw.option(input)
+	draw.selected(input)
 	draw.nl()
 
 	self.callback(input, table.unpack(self.callbackArgs))

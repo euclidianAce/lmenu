@@ -1,12 +1,21 @@
 
+---The base class that all menus inherit from
+---@class Menu
+---@field new
 local Menu = {}
 
+---Creates a new menu class with parent `parent`
+---@param parent Menu
 function Menu.new(parent)
 	local class
 	class = {
 		new = function(self, tab)
 			return setmetatable(tab or {}, class.metamethods)
 		end,
+		---Create an option for a menu
+		---@param content string What shows up
+		---@param callback function What gets called when this option is selected
+		---@param ...
 		add = function(self, content, callback, ...)
 			if not rawget(self, "options") then
 				self.options = {}

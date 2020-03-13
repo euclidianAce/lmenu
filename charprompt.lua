@@ -15,18 +15,23 @@ charprompt.options = {
 	callback = function() return false end},
 }
 
+---@param option table|string
+---@param upper boolean
 local function writeChar(option, upper)
 	local char = utils.getContent(option)
 	draw.char(upper and char:upper() or char)
 end
 
+---Draws the prompt
+---@overload prompt:draw()
+---@param c string
 function charprompt:draw(c)
 	if self.title then
 		draw.title(self.title)
 	end
 	if c then
 		draw.space()
-		draw.char(utils.getAltContent(c) or utils.getContent(c))
+		draw.selected(utils.getAltContent(c) or utils.getContent(c))
 	else
 		draw.space()
 		draw.paren('[')
@@ -43,6 +48,7 @@ function charprompt:resetCursor()
 	ANSI.clrln()
 end
 
+---@return string
 function charprompt:run()
 	self:draw()
 	local running = true
