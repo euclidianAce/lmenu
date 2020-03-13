@@ -2,6 +2,8 @@
 local Menu = require("lmenu.Menu")
 local draw = require("lmenu.draw")
 local list = require("lmenu.list")
+local utils = require("lmenu.utils")
+local ANSI = require("lmenu.ANSI")
 
 ---@class checklist : list
 ---@field check string
@@ -10,12 +12,30 @@ local checklist = Menu.new(list)
 checklist.check = "*"
 checklist.checkbox = "[%s]"
 
----Gets the content of an option regardless of the type
----@param option table|string
----@return string
-local function getContent(option)
-	return option.content or option[1] or option
+---@overload
+---@param index number
+function checklist:drawIndex(index)
+	local checked = self.options[index].checked
+	local option = self.options[index]
+	ANSI.clrln(2)
+	ANSI.cursor.column(1)
+	if self.selected == index then
+		draw.selector(self.selector)
+	else
+		draw.space(#self.selector)
+	end
+	draw.checkbox(self.checkbox:format(
+		checked and self.check
+		or (" "):rep(#self.check)
+	))
+	if checked then
+		draw.selected(option)
+	else
+		draw.option(option)
+	end
+	ANSI.cursor.column(1)
 end
+
 
 ---Draws the list, if sel is true then draw the list in its finished state
 ---@overload
@@ -28,9 +48,8 @@ function checklist:draw(sel)
 	if sel then
 		draw.nl()
 		for i, v in ipairs(self.options) do
-			local content = getContent(v)
-        local checked = v.checked
-			if checked then
+			local content = utils.getContent(v)
+			if v.checked then
 				draw.space()
 				draw.selected(content)
 				draw.nl()
@@ -38,23 +57,8 @@ function checklist:draw(sel)
 		end
 	else
 		draw.nl()
-		for i, v in ipairs(self.options) do
-			local content = getContent(v)
-			if i == self.selected then
-				draw.selector(self.selector)
-			else
-				draw.space(#self.selector)
-			end
-			draw.checkbox(self.checkbox:format(
-				v.checked and self.check
-				or (" "):rep(#self.check)
-			))
-			draw.space()
-			if v.checked then
-				draw.selected(content)
-			else
-				draw.option(content)
-			end
+		for i = 1, #self.options do
+			self:drawIndex(i)
 			draw.nl()
 		end
 	end
@@ -72,14 +76,8 @@ checklist.keyhandles = {
 setmetatable(checklist.keyhandles, {__index = list.keyhandles})
 
 function checklist:run()
-	self:draw()
-	while self:handlekeys() do
-		self:resetCursor()
-		self:draw()
-	end
+	self:input()
 	local rvals = {}
-	self:resetCursor()
-	self:draw(true)
 	for i, v in ipairs(self.options) do
 		if v.checked then
 			local vals = {}

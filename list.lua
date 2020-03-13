@@ -85,6 +85,8 @@ function list:handlekeys()
 	return kh(self)
 end
 
+---Draws the full list, if sel is true, draws the title with the selected option
+---@param sel boolean
 function list:draw(sel)
 	if sel then
 		if self.title then
@@ -101,27 +103,51 @@ function list:draw(sel)
 		draw.title(self.title)
 		draw.nl()
 	end
-	for i, option in ipairs(self.options) do
-		option = utils.getContent(option)
-		if i == self.selected then
-			draw.selector(self.selector)
-			draw.selected(option)
-		else
-			draw.space(#self.selector)
-			draw.option(option)
-		end
+	for i = 1, #self.options do
+		self:drawIndex(i)
 		draw.nl()
 	end
 end
 
-function list:run()
-	local running = true
-	while running do
-		self:draw()
-		running = self:handlekeys()
-		self:resetCursor()
+---Redraws the given index
+---Assumes the cursor is at the end of the list
+---@param index number
+function list:drawIndex(index)
+	ANSI.clrln(2)
+	ANSI.cursor.column(1)
+	if self.selected == index then
+		draw.selector(self.selector)
+		draw.selected(self.options[index])
+	else
+		draw.space(#self.selector)
+		draw.option(self.options[index])
 	end
+	ANSI.cursor.column(1)
+end
+
+function list:input()
+	local running = true
+	self:draw()
+	while running do
+		local lastSelected = self.selected
+		running = self:handlekeys()
+
+		ANSI.cursor.up(#self.options + 1)
+		ANSI.cursor.down(lastSelected)
+		self:drawIndex(lastSelected)
+		ANSI.cursor.down(#self.options - lastSelected + 1)
+		
+		ANSI.cursor.up(#self.options + 1)
+		ANSI.cursor.down(self.selected)
+		self:drawIndex(self.selected)
+		ANSI.cursor.down(#self.options - self.selected + 1)
+	end
+	self:resetCursor()
 	self:draw(true)
+end
+
+function list:run()
+	self:input()
 	return utils.doCallback(self.options[self.selected])
 end
 

@@ -52,24 +52,39 @@ end
 
 local cursor = {}
 ANSI.cursor = cursor
+---Moves the cursor up n rows
+---@param n number
 function cursor.up(n)
 	io.write(CSI .. (n or "") .. "A")
 end
+---Moves the cursor down n rows
+---@param n number
 function cursor.down(n)
 	io.write(CSI .. (n or "") .. "B")
 end
+---Moves the cursor left n columns
+---@param n number
 function cursor.left(n)
 	io.write(CSI .. (n or "") .. "C")
 end
+---Moves the cursor right n columns
+---@param n number
 function cursor.right(n)
 	io.write(CSI .. (n or "") .. "D")
 end
+---Sets the cursor's position to column n
+---@param n number
 function cursor.column(n)
-	io.write(string.char(27) .. "[" .. n .. "G")
+	io.write(CSI .. (n or "") .. "G")
 end
 
-function ANSI.clrln()
-	io.write(CSI .. "K")
+---Clears the current line
+---@param n number
+---	0 or missing: clear from cursor to end of line;
+---	1: cursor to beginning of line;
+---	2: clear entire line
+function ANSI.clrln(n)
+	io.write(CSI .. (n or 0) .. "K")
 end
 
 return ANSI

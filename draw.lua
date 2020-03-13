@@ -1,15 +1,16 @@
 
 local colorscheme = require("lmenu.colorscheme")
 local ANSI = require("lmenu.ANSI")
+local utils = require("lmenu.utils")
 
 local function write(csField, object)
 	local cs = colorscheme.current
 	if type(object) == "table" then
 		io.write(object.color or cs[csField])
-		io.write(object.content or "")
 	else
-		io.write(cs[csField], object)
+		io.write(cs[csField])
 	end
+	io.write(utils.getContent(object))
 	io.write(ANSI.reset)
 end
 
