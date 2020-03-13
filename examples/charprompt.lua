@@ -2,15 +2,16 @@
 local charprompt = require("lmenu.charprompt")
 
 -- default charprompt is a simple yes/no with yes being default
-charprompt():setTitle("This is a charprompt")()
+charprompt():setTitle("Yes or no?")()
+
 -- explicitly this can be written as
-charprompt():setTitle("This is a charprompt (2)")
+charprompt():setTitle("Again")
 	:add{"y", "Yes"}
 	:add{"n", "No"}
 	()
 
 -- default options will be capitalized
 charprompt{
-	title = "This is a charprompt (3)",
+	title = "Here are some more options",
 	options = {'a','b','c'}
 }()

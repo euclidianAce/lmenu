@@ -8,35 +8,35 @@ list():setTitle("This is a list")
 	()
 
 list{
-	title = "This is also a list, but differently constructed",
+	title = "This is also a list, but it defaults to option 2",
 	options = {
-		"Option 1",
-		"Option 2",
-		"Option 3"
+		"The first option",
+		"Option number 2",
+		"3 :)"
 	},
 	selected = 2,
 }()
 
 local result
 result = list():setTitle("This is a list where options have callbacks")
-	:add("Option 1", function() return 1 end)
-	:add("Option 2", print, "Hello, World!")
-	:add("Option 3", function(a, b, c) return a+b+c end, 1,2,3)
+	:add("A", function() return 1 end)
+	:add("B", print, "Hello, World!")
+	:add("C", function(a, b, c) return a+b+c end, 1,2,3)
 	()
 print("Result of callback: " .. tostring(result))
 
 result = list{
-	title = "This is the same list again",
+	title = "This is the same list again, but constructed with a table",
 	options = {
-		{"Option 1",
+		{"A",
 		callback = function()
 			return 1
 		end},
-		{"Option 2",
+		{"B",
 		callback = print,
 		callbackArgs = {"Hello, World!"}
 		},
-		{"Option 3",
+		{"C",
 		callback = function(a,b,c)
 			return a+b+c
 		end,

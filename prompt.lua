@@ -28,7 +28,7 @@ function prompt:run()
 	ANSI.cursor.up()
 	ANSI.clrln()
 
-	draw.title(self.title)
+	draw.title(self.title or "")
 	draw.space()
 	draw.selected(input)
 	draw.nl()

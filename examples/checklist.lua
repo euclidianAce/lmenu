@@ -14,22 +14,25 @@ checklist():setTitle("This is a checklist")
 	()
 
 checklist():setTitle("This is another checklist")
-   :setOptions{
-      "Option 1", "Option 2", {"Option 3", checked = true}
-   }
-   :setSelected(3)
-   ()
+	:setOptions{
+		"Option 1", 
+		{"Option 2", checked = true},
+		"Option 3",
+	}
+	:setSelected(3)
+	()
 
 checklist{
 	title = "This is a checklist too",
 	options = {
 		"Option 1",
 		{"Option 2", callback = print},
-		{"Option 3", checked = true, callback = function(a,b)
+		{"Option 3", 
+		callback = function(a,b)
 			return a .. b
 		end,
 		callbackArgs = {"a", "b"}}
 	},
-	selected = 2
+	selected = 2,
 }()
 

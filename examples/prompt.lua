@@ -3,28 +3,28 @@ local prompt = require("lmenu.prompt")
 
 local result
 result = prompt()
-		:setTitle("Hello")
-		:setDefault("things")()
+	:setTitle("Hello")
+	:setDefault("Hi")()
 
 print("Result from prompt: " .. tostring(result))
 
 result = prompt{
-	title = "Hello again",
-	default = "Stuff"
+	title = "How are you?",
+	default = "Fine"
 }()
 print("Result from prompt: " .. tostring(result))
 
 
 result = prompt{
-	title = "Hello again",
-	default = "Stuff",
+	title = "How are things?",
+	default = "Alright",
 	callback = print, -- prompts use their inputs for their callback's first argument
 }()
 -- but more arguments can be given with the same callbackArgs field
 
 result = prompt{
-	title = "Hello again",
-	default = "Stuff",
+	title = "Okay then",
+	default = "Bye",
 	callback = print,
-	callbackArgs = {" <- that was the result of the prompt. :)"}
+	callbackArgs = {" <- that was the result of the prompt. Goodbye :)"}
 }()
