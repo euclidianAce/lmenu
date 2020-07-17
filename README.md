@@ -1,3 +1,8 @@
+# This is currently broken (sort of)
+
+I've been refactoring some of my libraries in addition to rewriting them in [Teal](https://github.com/teal-language/tl), and this ones dependency, lgetchar, has gone through a (much needed) rewrite, but is now completely incompatible. Additionally, this module uses a class model that the current type system in Teal doesn't play well with, so ¯\\\_(ツ)\_/¯
+
+but if you use the non `--dev` version of `lgetchar` this may work fine, but just know in the future there will probably be a rewrite
 # lmenu
 A simple library for creating command line menus, inspired by inquirer.js.
 
